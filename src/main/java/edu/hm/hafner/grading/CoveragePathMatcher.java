@@ -46,7 +46,16 @@ class CoveragePathMatcher {
         String moduleRoot = extractModuleRoot(reportFile);
 
         // Strategy 1: Exact match (fast path for simple cases)
-        String exactPath = sourcePath.isEmpty() ? normalizedCoveragePath : sourcePath + "/" + normalizedCoveragePath;
+        String exactPath;
+        if (sourcePath.isEmpty()) {
+            exactPath = normalizedCoveragePath;
+        }
+        else if (normalizedCoveragePath.isEmpty()) {
+            exactPath = sourcePath;
+        }
+        else {
+            exactPath = sourcePath + "/" + normalizedCoveragePath;
+        }
         if (modifiedLines.containsKey(exactPath)) {
             return exactPath;
         }
@@ -111,14 +120,16 @@ class CoveragePathMatcher {
     }
 
     /**
-     * Checks if path2 is a suffix of path1.
+     * Checks if path2 is a suffix of path1 at a path boundary.
+     * Only matches when there's a "/" separator to avoid false positives
+     * like "File.java" matching "TestFile.java".
      *
      * @param path1 the full path
      * @param path2 the potential suffix
-     * @return true if path1 ends with path2
+     * @return true if path1 ends with "/" + path2
      */
     private boolean isPathSuffix(final String path1, final String path2) {
-        return path1.endsWith("/" + path2) || path1.endsWith(path2);
+        return path1.endsWith("/" + path2);
     }
 
     /**
