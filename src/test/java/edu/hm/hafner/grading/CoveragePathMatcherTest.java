@@ -346,16 +346,16 @@ class CoveragePathMatcherTest {
     }
     
     @Test
-    void shouldMatchWhenSuffixIncludesPartialWord() {
-        // "File.java" IS a suffix of "TestFile.java" from string perspective
-        // This is actually desired behavior - matches are lenient
+    void shouldNotMatchPartialWordSuffix() {
+        // "File.java" is a string suffix of "TestFile.java" but NOT a path suffix
+        // This should NOT match - they are different files!
         var modifiedLines = Map.of("src/TestFile.java", Set.of(10));
         var matcher = new CoveragePathMatcher(modifiedLines);
         
         String result = matcher.findMatch("File.java", "", Paths.get("target/jacoco.xml"));
         
-        // This matches because "File.java" is a suffix of "TestFile.java"
-        assertThat(result).isEqualTo("src/TestFile.java");
+        // Should NOT match - File.java != TestFile.java
+        assertThat(result).isNull();
     }
     
     @Test
@@ -378,5 +378,45 @@ class CoveragePathMatcherTest {
         assertThat(resultApp).isEqualTo("app/src/Utils.java");
         assertThat(resultLib).isEqualTo("lib/src/Utils.java");
         assertThat(resultCore).isEqualTo("core/src/Utils.java");
+    }
+    
+    // ============================================
+    // Additional tests added during code review
+    // These test for FALSE POSITIVES that should NOT match
+    // ============================================
+    
+    @Test
+    void shouldNotMatchPartialFilenameFile() {
+        // BUG TEST: File.java should NOT match TestFile.java
+        // These are completely different files!
+        var modifiedLines = Map.of("src/TestFile.java", Set.of(10));
+        var matcher = new CoveragePathMatcher(modifiedLines);
+        
+        String result = matcher.findMatch("File.java", "", Paths.get("target/jacoco.xml"));
+        
+        // This SHOULD be null - File.java is NOT the same as TestFile.java
+        assertThat(result).isNull();
+    }
+    
+    @Test
+    void shouldNotMatchPartialFilenameHelper() {
+        // Helper.java should NOT match MyHelper.java
+        var modifiedLines = Map.of("src/MyHelper.java", Set.of(10));
+        var matcher = new CoveragePathMatcher(modifiedLines);
+        
+        String result = matcher.findMatch("Helper.java", "", Paths.get("target/jacoco.xml"));
+        
+        assertThat(result).isNull();
+    }
+    
+    @Test
+    void shouldNotMatchPartialFilenameService() {
+        // Service.java should NOT match UserService.java
+        var modifiedLines = Map.of("src/UserService.java", Set.of(10));
+        var matcher = new CoveragePathMatcher(modifiedLines);
+        
+        String result = matcher.findMatch("Service.java", "", Paths.get("target/jacoco.xml"));
+        
+        assertThat(result).isNull();
     }
 }
