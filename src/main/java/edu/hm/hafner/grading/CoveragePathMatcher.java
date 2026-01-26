@@ -11,7 +11,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
  * Supports multiple coverage tools and multi-module projects through bidirectional suffix matching
  * and module context extraction.
  *
- * @author Ullrich Hafner
+ * @author Apoorva Mahabaleshwara
  */
 class CoveragePathMatcher {
     private final Map<String, Set<Integer>> modifiedLines;
