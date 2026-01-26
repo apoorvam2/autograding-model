@@ -380,10 +380,6 @@ class CoveragePathMatcherTest {
         assertThat(resultCore).isEqualTo("core/src/Utils.java");
     }
     
-    // ============================================
-    // Additional tests added during code review
-    // These test for FALSE POSITIVES that should NOT match
-    // ============================================
     
     @Test
     void shouldNotMatchPartialFilenameFile() {
