@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * Tests for {@link CoveragePathMatcher}.
  *
- * @author Ullrich Hafner
+ * @author Apoorva Mahabaleshwara
  */
 class CoveragePathMatcherTest {
     @Test
